@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>雪花飘落</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+
+        html,
+        body {
+            overflow: hidden;
+        }
+
+        #myCanvas {
+            background: #000;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="myCanvas"></canvas>
+    <script>
+        const myCanvas = document.getElementById('myCanvas')
+        const ctx = myCanvas.getContext('2d')
+        let snowArray = []
+        // 设置canvas的宽高
+        myCanvas.width = window.innerWidth
+        myCanvas.height = window.innerHeight
+
+        // 生成雪花
+        function SetSnow(x, y, scale, rotate, speedX, speedY, speedR) {
+            this.x = x
+            this.y = y
+            this.scale = scale
+            this.rotate = rotate
+            this.speedX = speedX
+            this.speedY = speedY
+            this.speedR = speedR
+            this.render = function () {
+                ctx.save()
+                ctx.beginPath();
+                ctx.strokeStyle = '#fff';
+                ctx.lineWidth = 6;
+                ctx.translate(this.x, this.y);
+                ctx.scale(this.scale, this.scale)
+                ctx.rotate((- this.rotate * Math.PI) / 180)
+                ctx.fillStyle = 'rgb(252, 80, 80)';
+                ctx.fillRect(-30, 40, 60, 80);
+                ctx.fillStyle = 'rgb(252, 80, 80)'
+                ctx.fillRect(-30, 10, 60, 80)
+                ctx.arc(0, 90, 10, 0, Math.PI * 2, 0)
+                ctx.moveTo(10, 60);
+                ctx.arc(0, 60, 10, 0, Math.PI * 2, 0)
+                ctx.moveTo(10, 30)
+                ctx.lineTo(-12, 30)
+                ctx.fill()
+                ctx.closePath()
+                let disX = 30 * Math.sin((30 * Math.PI) / 180)
+                let disY = 30 * Math.sin((60 * Math.PI) / 180)
+                ctx.lineCap = 'round';
+                ctx.stroke();
+                ctx.restore();
+            }
+        }
+
+        // 随机生成雪花
+        function init() {
+            const num = 100
+            for (let i = 0; i < num; i++) {
+                let x = Math.random() * myCanvas.width
+                let y = Math.random() * myCanvas.height / 3
+                let scale = Math.random() + 0.5
+                let rotate = Math.random() * 60
+                let speedX = 5 + Math.random()
+                let speedY = 7 + Math.random()
+                let speedR = 9 + Math.random() * 4
+                setTimeout(function () {
+                    let snow = new SetSnow(x, y, scale, rotate, speedX, speedY, speedR)
+                    snow.render()
+                    snowArray.push(snow)
+                }, Math.random() * 4000)
+            }
+            fall()
+        }
+        init()
+
+        // 雪花下落
+        function fall() {
+            setInterval(function () {
+                ctx.clearRect(0, 0, myCanvas.width, myCanvas.height);
+                for (let i = 0; i < snowArray.length; i++) {
+                    snowArray[i].x = (snowArray[i].x + snowArray[i].speedX) % myCanvas.width
+                    snowArray[i].y = (snowArray[i].y + snowArray[i].speedY) % myCanvas.height
+                    // snowArray[i].rotate = (snowArray[i].rotate + snowArray[i].speedR) % 60
+                    snowArray[i].render()
+                }
+            }, 30)
+        }
+    </script>
+</body>
+
+</html>
